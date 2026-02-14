@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package plugins.identifier.v1;
+
+import "google/protobuf/descriptor.proto";
+
+option go_package = "github.com/OldBigBuddha/protoc-gen-go-identifier/v1;identifierv1";
+
+// IdentifierOptions configures code generation for identifier messages.
+//
+// CONSTRAINT: Messages with this option MUST have exactly ONE scalar field.
+// The plugin automatically uses that single field as the underlying value.
+// This enforces the semantic definition of an identifier: a typed wrapper
+// around a single primitive value.
+message IdentifierOptions {
+  // skip_unwrap disables generation of Unwrap() method.
+  bool skip_unwrap = 1;
+
+  // skip_equal disables generation of Equal() method.
+  bool skip_equal = 2;
+
+  // skip_clone disables generation of Clone() method.
+  bool skip_clone = 3;
+
+  // skip_constructor disables generation of As<Type>() function.
+  bool skip_constructor = 4;
+}
+
+extend google.protobuf.MessageOptions {
+  // identifier marks a message as an identifier type and enables
+  // automatic helper method generation.
+  //
+  // Usage:
+  //   message FooID {
+  //     option (plugins.identifier.v1.identifier) = {};
+  //     string id = 1;
+  //   }
+  //
+  // The message MUST have exactly one scalar field. The plugin
+  // auto-detects that field for Unwrap(), etc.
+  IdentifierOptions identifier = 74000;
+}

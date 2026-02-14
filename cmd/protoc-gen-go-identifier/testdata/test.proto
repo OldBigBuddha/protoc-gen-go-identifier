@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package testdata;
+
+import "v1/options.proto";
+
+option go_package = "github.com/OldBigBuddha/protoc-gen-go-identifier/cmd/protoc-gen-go-identifier/testdata;testdata";
+
+// StringID is an identifier with a string field.
+message StringID {
+  option (plugins.identifier.v1.identifier) = {};
+  string id = 1;
+}
+
+// IntID is an identifier with an int64 field.
+message IntID {
+  option (plugins.identifier.v1.identifier) = {};
+  int64 id = 1;
+}
+
+// BytesID is an identifier with a bytes field.
+message BytesID {
+  option (plugins.identifier.v1.identifier) = {};
+  bytes data = 1;
+}
+
+// PartialID only generates some methods.
+message PartialID {
+  option (plugins.identifier.v1.identifier) = {
+    skip_constructor: true
+    skip_clone: true
+  };
+  string id = 1;
+}
+
+// NoOptionMessage should not generate any identifier methods.
+message NoOptionMessage {
+  string id = 1;
+  string name = 2;
+}
+

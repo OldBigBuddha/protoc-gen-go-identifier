@@ -1,0 +1,16 @@
+version: v2
+modules:
+  - path: .
+lint:
+  use:
+    - STANDARD
+  except:
+    # The proto package plugins.identifier.v1 is an API contract preserved
+    # from the original monorepo. The directory structure in this standalone
+    # repository does not match, which is acceptable for a protoc plugin.
+    - PACKAGE_DIRECTORY_MATCH
+    - PACKAGE_VERSION_SUFFIX
+breaking:
+  use:
+    - FILE
+

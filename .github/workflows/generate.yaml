@@ -1,0 +1,43 @@
+name: Generate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: generate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  generate-freshness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - uses: bufbuild/buf-action@v1
+        with:
+          setup_only: true
+
+      - name: Install protoc-gen-go
+        run: go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+
+      - name: Generate protobuf code
+        run: buf generate
+
+      - name: Verify no uncommitted changes
+        run: |
+          if ! git diff --exit-code; then
+            echo "::error::Generated code is out of date. Run 'buf generate' locally and commit the results."
+            exit 1
+          fi
+

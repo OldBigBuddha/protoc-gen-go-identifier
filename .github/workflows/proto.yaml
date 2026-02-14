@@ -1,0 +1,54 @@
+name: Protobuf
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "v1/**"
+      - "cmd/**/testdata/**/*.proto"
+      - "buf.yaml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "v1/**"
+      - "cmd/**/testdata/**/*.proto"
+      - "buf.yaml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: proto-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  proto-lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: bufbuild/buf-action@v1
+        with:
+          setup_only: true
+
+      - name: Lint
+        run: buf lint
+
+      - name: Format check
+        run: buf format --diff --exit-code
+
+  proto-breaking:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: bufbuild/buf-action@v1
+        with:
+          setup_only: true
+
+      - name: Breaking change detection
+        run: buf breaking --against '.git#branch=main'
+
