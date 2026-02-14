@@ -38,4 +38,3 @@ message NoOptionMessage {
   string id = 1;
   string name = 2;
 }
-
